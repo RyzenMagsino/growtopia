@@ -16,12 +16,10 @@ class AddCategoryDialog extends StatefulWidget {
 }
 
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
-  /* step‑1 variables (common) */
   String _name = '';
   IconData? _icon;
   CategoryType _type = CategoryType.folder;
 
-  /* step‑2 variables (tables only) */
   int _colCount = 1;
   List<TextEditingController> _colCtrls = [TextEditingController()];
 
@@ -40,20 +38,60 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('New in ${widget.pageTitle}'),
+      backgroundColor: const Color(0xFFE6D9FA),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: Color(0xFF7A42F4), width: 3),
+      ),
+      title: Row(
+        children: [
+          Image.asset(
+            'assets/images/growtopia.png',
+            width: 40,
+            height: 40,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'New in ${widget.pageTitle}',
+              style: const TextStyle(
+                fontFamily: 'PixelifySans',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Color(0xFF7A42F4),
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            /* ------------- STEP‑1 (common) ------------- */
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(),
+            // ── Step 1: Title ──────────────────────
+            Padding(
+              padding: const EdgeInsets.only(top: 6), // Added top padding here
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onChanged: (v) => setState(() => _name = v),
               ),
-              onChanged: (v) => setState(() => _name = v),
             ),
             const SizedBox(height: 12),
+
+            // ── Step 1: Toggle Buttons ─────────────
             ToggleButtons(
               isSelected: [
                 _type == CategoryType.folder,
@@ -62,6 +100,9 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               onPressed: (i) => setState(() =>
               _type = i == 0 ? CategoryType.folder : CategoryType.table),
               borderRadius: BorderRadius.circular(8),
+              selectedColor: Colors.white,
+              color: Colors.black87,
+              fillColor: const Color(0xFFB388FF),
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
@@ -74,6 +115,9 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               ],
             ),
             const SizedBox(height: 12),
+
+            // ── Step 1: Icon Choices ───────────────
+            // ── Step 1: Icon Choices ───────────────
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -86,28 +130,35 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: selected
-                          ? Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.2)
-                          : Colors.grey.shade100,
+                          ? Colors.deepPurple.withOpacity(0.1) // LESS intense
+                          : Colors.white,
                       border: Border.all(
                         color: selected
-                            ? Theme.of(context).colorScheme.primary
+                            ? Colors.deepPurple.shade200 // Lighter border
                             : Colors.grey.shade400,
+                        width: 2,
                       ),
+                      boxShadow: [
+                        if (selected)
+                          BoxShadow(
+                            color: Colors.deepPurple.withOpacity(0.15), // Subtle glow
+                            blurRadius: 3, // Smaller blur
+                            offset: const Offset(1, 2),
+                          )
+                      ],
                     ),
-                    child: Icon(icon,
-                        size: 28,
-                        color: selected
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.black54),
+                    child: Icon(
+                      icon,
+                      size: 28,
+                      color: selected ? Colors.deepPurple : Colors.black54,
+                    ),
                   ),
                 );
               }).toList(),
             ),
 
-            /* ------------- STEP‑2 (only for tables) ------------- */
+
+            // ── Step 2: Columns ─────────────────────
             if (_isStep2) ...[
               const Divider(height: 24),
               Row(
@@ -128,10 +179,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                       setState(() {
                         _colCount = v;
                         _colCtrls = List.generate(
-                            v,
-                                (i) => i < _colCtrls.length
-                                ? _colCtrls[i]
-                                : TextEditingController());
+                          v,
+                              (i) => i < _colCtrls.length
+                              ? _colCtrls[i]
+                              : TextEditingController(),
+                        );
                       });
                     },
                   ),
@@ -146,22 +198,41 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                     controller: _colCtrls[i],
                     decoration: InputDecoration(
                       labelText: 'Column ${i + 1}',
-                      border: const OutlineInputBorder(),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    onChanged: (_) => setState(() {}), // 🛠️ Add this line
+                    onChanged: (_) => setState(() {}),
                   ),
                 ),
               ),
-
             ],
           ],
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel')),
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.redAccent),
+          ),
+        ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFB388FF),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           onPressed: _canSubmit ? _createCategory : null,
           child: const Text('Add'),
         ),

@@ -49,17 +49,7 @@ class MyGameAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      actions: actions ??
-          [
-            IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
+      actions: actions, // no default icons, now only shows if you pass custom actions
     );
   }
 }
